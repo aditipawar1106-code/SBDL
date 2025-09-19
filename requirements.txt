@@ -1,0 +1,32 @@
+# Core streaming and processing
+kafka-python==1.4.7       # compatible with robinhood-aiokafka
+pyspark==4.0.1
+faust==1.10.4
+click==7.1.2              # required by Faust
+
+# Data handling & serialization
+pandas==2.2.2
+pyarrow==17.0.0
+protobuf==5.28.2
+fastavro==1.9.4
+
+# Databases / storage
+psycopg2-binary==2.9.9      # PostgreSQL
+mysql-connector-python==9.0.0
+pymongo==4.8.0
+
+# API / microservices layer
+flask==2.0.3               # compatible with click<8
+fastapi==0.115.0
+uvicorn==0.30.6
+
+# Security
+cryptography==43.0.3
+pyjwt==2.9.0
+
+# Monitoring & logging
+prometheus-client==0.20.0
+loguru==0.7.2
+
+# Testing
+pytest==8.3.3
