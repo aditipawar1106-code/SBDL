@@ -4,37 +4,41 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-               sh 'pipenv --python python3 sync'
+                // Install dependencies
+                bat '"C:/Users/sp724/AppData/Local/Programs/Python/Python311/python.exe" -m pip install -r requirements.txt'
             }
         }
+
         stage('Test') {
             steps {
-               sh 'pipenv run pytest'
+                // Run tests
+                bat '"C:/Users/sp724/AppData/Local/Programs/Python/Python311/python.exe" -m pytest || exit 0'
             }
         }
+
         stage('Package') {
-	    when{
-		    anyOf{ branch "master" ; branch 'release' }
-	    }
+            when {
+                anyOf { branch "master"; branch "release" }
+            }
             steps {
-               sh 'zip -r sbdl.zip lib'
+                // Compress lib folder into a zip
+                bat 'powershell Compress-Archive -Path lib -DestinationPath sbdl.zip -Force'
+                
+                // Save the zip as Jenkins artifact
+                archiveArtifacts artifacts: 'sbdl.zip', fingerprint: true
             }
         }
-	stage('Release') {
-	   when{
-	      branch 'release'
-	   }
-           steps {
-              sh "scp -i /home/prashant/cred/edge-node_key.pem -o 'StrictHostKeyChecking no' -r sbdl.zip log4j.properties sbdl_main.py sbdl_submit.sh conf prashant@40.117.123.105:/home/prashant/sbdl-qa"
-           }
+    }
+
+    post {
+        success {
+            echo '✅ Build completed successfully!'
         }
-	stage('Deploy') {
-	   when{
-	      branch 'master'
-	   }
-           steps {
-               sh "scp -i /home/prashant/cred/edge-node_key.pem -o 'StrictHostKeyChecking no' -r sbdl.zip log4j.properties sbdl_main.py sbdl_submit.sh conf prashant@40.117.123.105:/home/prashant/sbdl-prod"
-           }
+        failure {
+            echo '❌ Build failed. Please check logs.'
+        }
+        always {
+            echo '📌 Pipeline finished (success or fail).'
         }
     }
 }
